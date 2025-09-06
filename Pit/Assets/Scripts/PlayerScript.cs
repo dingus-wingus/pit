@@ -74,5 +74,20 @@ public class PlayerScript : MonoBehaviour
             health = Mathf.Clamp(health + other.GetComponent<HealthPickupScript>().healthGiven, 0, maxHealth);
             Destroy(other.gameObject);
         }
+
+        if (other.GetComponent<VineScript>())
+        {
+            speed = 2;
+            GetComponent<Rigidbody>().drag = 12;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.GetComponent<VineScript>())
+        {
+            speed = 10;
+            GetComponent<Rigidbody>().drag = 0;
+        }
     }
 }
