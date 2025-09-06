@@ -13,7 +13,7 @@ public class PlayerScript : MonoBehaviour
     public float stamina;
     public float maxStamina;
 
-    public int grapples;
+    public float grapples;
     public float maxGrapples;
 
     public bool facingLeft;
@@ -58,6 +58,21 @@ public class PlayerScript : MonoBehaviour
             //make facingleft false
             transform.rotation = Quaternion.Euler(0, 180, 0);
             facingLeft = true;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.GetComponent<GrapplePickupScript>())
+        {
+            grapples = Mathf.Clamp(grapples + other.GetComponent<GrapplePickupScript>().grappleGiven, 0, maxGrapples);
+            Destroy(other.gameObject);
+        }
+
+        if (other.GetComponent<HealthPickupScript>())
+        {
+            health = Mathf.Clamp(health + other.GetComponent<HealthPickupScript>().healthGiven, 0, maxHealth);
+            Destroy(other.gameObject);
         }
     }
 }

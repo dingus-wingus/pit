@@ -149,7 +149,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   health: 0
-  maxHealth: 0
+  maxHealth: 100
+  stamina: 0
+  maxStamina: 0
+  grapples: 0
+  maxGrapples: 3
   facingLeft: 0
 --- !u!114 &7001226782442241803
 MonoBehaviour:
