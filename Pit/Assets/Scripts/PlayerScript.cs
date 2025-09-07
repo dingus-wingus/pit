@@ -55,6 +55,7 @@ public class PlayerScript : MonoBehaviour
         normal, //moving, falling, etc
         climbing, //climbing
         grappling, //moving on the grapple
+        dead, //takes no input, game over
     }
     private playerState currentState = playerState.normal;
 
@@ -451,6 +452,8 @@ public class PlayerScript : MonoBehaviour
 
     IEnumerator GameEnd()
     {
+        currentState = playerState.dead;
+        anim.Play("scout_dead");
         yield return new WaitForSeconds(2);
         SceneManager.LoadScene(3);
     }
