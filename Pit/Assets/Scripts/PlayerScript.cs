@@ -58,6 +58,10 @@ public class PlayerScript : MonoBehaviour
     }
     private playerState currentState = playerState.normal;
 
+    public Sprite[] sprites;
+    public SpriteRenderer spriteRenderer;
+    public Animator anim;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -85,6 +89,9 @@ public class PlayerScript : MonoBehaviour
         {
             case playerState.normal:
                 Move();
+                if (facingLeft) spriteRenderer.flipX = false;
+                else spriteRenderer.flipX = true;
+
                 Grapple();
 
                 CheckGround();
@@ -106,6 +113,8 @@ public class PlayerScript : MonoBehaviour
                        //without this if playerstate == playerstate.normal, the code for case playerstate.climbing would also be executed
             case playerState.climbing:
                 Climb();
+                if (facingLeft) spriteRenderer.flipX = false;
+                else spriteRenderer.flipX = true;
 
                 break;
 
@@ -136,13 +145,17 @@ public class PlayerScript : MonoBehaviour
         grappleDistanceTravelled += (move * climbSpeed * 2 * Time.deltaTime);
         if (grappleDistanceTravelled < 0 || grappleDistanceTravelled > grappleDistance)
         {
+            anim.speed = 1;
             currentState = playerState.climbing;
         }
+
+        if (move != 0) anim.speed = 1;
+        else anim.speed = 0;
     }
 
     public void StartGrappling()
     {
-        Debug.Log("Starting Grapple");
+        anim.Play("scout_climb");
         GetComponent<Rigidbody>().useGravity = false;
         currentState = playerState.grappling;
 
@@ -221,11 +234,13 @@ public class PlayerScript : MonoBehaviour
         {
             stamina -= staminaDrain * Time.deltaTime * climbRestFactor;
             if (stamina < 0) stamina = 0;
+            anim.speed = 0;
         } 
         else
         {
             stamina -= staminaDrain * Time.deltaTime;
             if (stamina < 0) stamina = 0;
+            anim.speed = 1;
         }
             
         
@@ -239,6 +254,7 @@ public class PlayerScript : MonoBehaviour
         if (!Input.GetKey(KeyCode.Space) || stamina <= 0) //if the player lets go of space
         {
             GetComponent<Rigidbody>().useGravity = true;
+            anim.speed = 1;
             currentState = playerState.normal; //return to normal state
         }
     }
@@ -289,11 +305,30 @@ public class PlayerScript : MonoBehaviour
         */
 
         int move = 0;
-        if (Input.GetKey(KeyCode.D)) move += 1;
-        if (Input.GetKey(KeyCode.A)) move -= 1;
+        if (Input.GetKey(KeyCode.D))
+        {
+            move += 1;
+            facingLeft = false;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            move -= 1;
+            facingLeft = true;
+        }
 
-        if (_grounded) hSpeed = Approach(hSpeed, speed * move, speed * (1 / accel) * Time.deltaTime);
-        else hSpeed = Approach(hSpeed, speed * move, speed * (1 / accel) * Time.deltaTime * airAccelFactor);
+        
+
+        if (_grounded)
+        {
+            hSpeed = Approach(hSpeed, speed * move, speed * (1 / accel) * Time.deltaTime); 
+            if (move != 0) anim.Play("scout_run_anim");
+            else anim.Play("scout_idle");
+        }
+        else
+        {
+            hSpeed = Approach(hSpeed, speed * move, speed * (1 / accel) * Time.deltaTime * airAccelFactor);
+            anim.Play("scout_fall");
+        }
 
             GetComponent<Rigidbody>().MovePosition(transform.position + (new Vector3(hSpeed, 0, 0) * Time.deltaTime));
 
@@ -301,6 +336,7 @@ public class PlayerScript : MonoBehaviour
         {
             GetComponent<Rigidbody>().useGravity = false;
             currentState = playerState.climbing;
+            anim.Play("scout_climb");
         }
 
         /* Sean commented this out because the code for climbing is now in the Climb() Function
