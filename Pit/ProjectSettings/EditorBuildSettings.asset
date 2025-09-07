@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/GitStomp's Scene.unity
-    guid: 99cf84e1fbc4e4b4e8d1915a63f1a382
+    path: Assets/Scenes/TitleCard.unity
+    guid: 25dda2849beeea54e9d9ee2d1b6ba315
   - enabled: 1
     path: Assets/Scenes/MainGame.unity
     guid: fa54b5a8d059b4d4795484e6af4fdba5
@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameOver.unity
     guid: 82eef7803439b0a489b035c65bed3ce0
+  - enabled: 1
+    path: Assets/Scenes/GitStomp's Scene.unity
+    guid: 99cf84e1fbc4e4b4e8d1915a63f1a382
   m_configObjects: {}
