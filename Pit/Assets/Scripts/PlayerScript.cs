@@ -9,13 +9,15 @@ public class PlayerScript : MonoBehaviour
     public float speed = 10;
     public float climbSpeed = 3;
 
-    public float health;
-    public float maxHealth;
+    //public float health;
+    //public float maxHealth;
 
     public float stamina;
     public float maxStamina;
     public float staminaDrain; //the rate at which stamina drains in stamina per second
     public float staminaRecover; //the rate at which stamina is recovered in stamina per second
+    public float staminaDamage; //the amount of stamina that cannot be recovered due to damage
+    public float climbRestFactor; //the multiplier for stamina drain when the player is not moving while holding space
 
     public float grapples;
     public float maxGrapples;
@@ -42,6 +44,7 @@ public class PlayerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        stamina = maxStamina - staminaDamage;
         rigidBody = GetComponent<Rigidbody>();
     }
 
@@ -67,19 +70,16 @@ public class PlayerScript : MonoBehaviour
                 wasFalling = isFalling;
 
                 //Recover stamina
-                if (stamina < maxStamina && _grounded)
+                if ((stamina < maxStamina - staminaDamage) && _grounded)
                 {
                     stamina += staminaRecover * Time.deltaTime;
-                    if (stamina > maxStamina) stamina = maxStamina;
+                    if (stamina > maxStamina - staminaDamage) stamina = maxStamina - staminaDamage;
                 }
 
                 break; //by using the break keyword we can tell the switch state when to stop executing code
                        //without this if playerstate == playerstate.normal, the code for case playerstate.climbing would also be executed
             case playerState.climbing:
                 Climb();
-
-                stamina -= staminaDrain * Time.deltaTime;
-                if (stamina < 0) stamina = 0;
 
                 break;
         }
@@ -126,6 +126,19 @@ public class PlayerScript : MonoBehaviour
             //make facingleft false
             //transform.rotation = Quaternion.Euler(0, 180, 0);
         }
+
+        if (climbVector == Vector3.zero)
+        {
+            stamina -= staminaDrain * Time.deltaTime * climbRestFactor;
+            if (stamina < 0) stamina = 0;
+        } 
+        else
+        {
+            stamina -= staminaDrain * Time.deltaTime;
+            if (stamina < 0) stamina = 0;
+        }
+            
+        
 
         climbVector = climbVector.normalized;
         climbVector *= climbSpeed;
@@ -221,7 +234,9 @@ public class PlayerScript : MonoBehaviour
 
         if (other.GetComponent<HealthPickupScript>())
         {
-            health = Mathf.Clamp(health + other.GetComponent<HealthPickupScript>().healthGiven, 0, maxHealth);
+            //health = Mathf.Clamp(health + other.GetComponent<HealthPickupScript>().healthGiven, 0, maxHealth);
+            staminaDamage -= other.GetComponent<HealthPickupScript>().healthGiven;
+            if (staminaDamage <= 0) staminaDamage = 0;
             Destroy(other.gameObject);
         }
 
@@ -263,7 +278,8 @@ public class PlayerScript : MonoBehaviour
 
         if (fallDistance > minimumFall)
         {
-            health = ((health) - (fallDistance * 3));
+            //health = ((health) - (fallDistance * 3));
+            staminaDamage += fallDistance * 3;
             Debug.Log("Player fell " + fallDistance + " units ");
         }
 
