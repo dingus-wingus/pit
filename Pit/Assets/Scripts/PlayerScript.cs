@@ -281,6 +281,12 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Author: Alex
+    /// Desc: Checks if player left the vines then resest player speed
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerExit(Collider other)
     {
         if (other.GetComponent<VineScript>())
