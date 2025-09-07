@@ -82,6 +82,11 @@ public class PlayerScript : MonoBehaviour
         {
             StartCoroutine(GameEnd());
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(1);
+        }
     }
 
     private void FixedUpdate()
