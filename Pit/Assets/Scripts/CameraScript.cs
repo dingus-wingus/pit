@@ -38,5 +38,10 @@ public class CameraScript : MonoBehaviour
         }*/
 
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, leftLimit, rightLimit), Mathf.Clamp(transform.position.y, bottomLimit, topLimit), Mathf.Clamp(transform.position.z, -10, -10));
+
+        /*if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, -10);
+        }*/
     }
 }
