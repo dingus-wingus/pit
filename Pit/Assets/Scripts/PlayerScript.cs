@@ -14,6 +14,8 @@ public class PlayerScript : MonoBehaviour
 
     public float stamina;
     public float maxStamina;
+    public float staminaDrain; //the rate at which stamina drains in stamina per second
+    public float staminaRecover; //the rate at which stamina is recovered in stamina per second
 
     public float grapples;
     public float maxGrapples;
@@ -30,6 +32,13 @@ public class PlayerScript : MonoBehaviour
     public bool _grounded = false;
     public float minimumFall;
 
+    //Player State Machine
+    private enum playerState { //this is an enumerator, a type of variable that can be any value from a defined set. All of our different states are defined here
+        normal, //moving, falling, etc
+        climbing, //climbing
+    }
+    private playerState currentState = playerState.normal;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,15 +53,91 @@ public class PlayerScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Move();
+        switch (currentState) //this is a switch statement, we can define cases for it to check that if true, will execute all code beneath it to the END of the entire switch state
+        {
+            case playerState.normal:
+                Move();
 
-        CheckGround();
+                CheckGround();
 
-        if (!wasFalling && isFalling) startOfFall = transform.position.y;
-        if (!wasGrounded && _grounded) TakeDamage();
+                if (!wasFalling && isFalling) startOfFall = transform.position.y;
+                if (!wasGrounded && _grounded) TakeDamage();
 
-        wasGrounded = _grounded;
-        wasFalling = isFalling;
+                wasGrounded = _grounded;
+                wasFalling = isFalling;
+
+                //Recover stamina
+                if (stamina < maxStamina && _grounded)
+                {
+                    stamina += staminaRecover * Time.deltaTime;
+                    if (stamina > maxStamina) stamina = maxStamina;
+                }
+
+                break; //by using the break keyword we can tell the switch state when to stop executing code
+                       //without this if playerstate == playerstate.normal, the code for case playerstate.climbing would also be executed
+            case playerState.climbing:
+                Climb();
+
+                stamina -= staminaDrain * Time.deltaTime;
+                if (stamina < 0) stamina = 0;
+
+                break;
+        }
+        
+    }
+
+    private void Climb()
+    {
+        Vector3 climbVector = Vector3.zero;
+        //Check if D key is held
+        if (Input.GetKey(KeyCode.D))
+        {
+            climbVector += Vector3.right;
+            //transform.position += Vector3.right * speed * Time.deltaTime;
+            //make facingLeft true
+            //transform.rotation = Quaternion.Euler(0, 0, 0);
+            facingLeft = false;
+        }
+
+        //Check if A key is held
+        if (Input.GetKey(KeyCode.A))
+        {
+            climbVector += Vector3.left;
+            //transform.position += Vector3.left * speed * Time.deltaTime;
+            //make facingleft false
+            //transform.rotation = Quaternion.Euler(0, 180, 0);
+            facingLeft = true;
+        }
+
+        //Check if W key is held
+        if (Input.GetKey(KeyCode.W))
+        {
+            climbVector += Vector3.up;
+            //transform.position += Vector3.right * speed * Time.deltaTime;
+            //make facingLeft true
+            //transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
+        //Check if S key is held
+        if (Input.GetKey(KeyCode.S))
+        {
+            climbVector += Vector3.down;
+            //transform.position += Vector3.left * speed * Time.deltaTime;
+            //make facingleft false
+            //transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
+
+        climbVector = climbVector.normalized;
+        climbVector *= climbSpeed;
+
+        GetComponent<Rigidbody>().MovePosition(transform.position + (climbVector * Time.deltaTime));
+
+
+        if (!Input.GetKey(KeyCode.Space) || stamina <= 0) //if the player lets go of space
+        {
+            GetComponent<Rigidbody>().useGravity = true;
+            currentState = playerState.normal; //return to normal state
+        }
     }
 
     /// <summary>
@@ -66,7 +151,7 @@ public class PlayerScript : MonoBehaviour
             GetComponent<Rigidbody>().MovePosition(transform.position + (Vector3.right * speed * Time.deltaTime));
             //transform.position += Vector3.right * speed * Time.deltaTime;
             //make facingLeft true
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            //transform.rotation = Quaternion.Euler(0, 0, 0);
             facingLeft = false;
         }
 
@@ -76,18 +161,20 @@ public class PlayerScript : MonoBehaviour
             GetComponent<Rigidbody>().MovePosition(transform.position + (Vector3.left * speed * Time.deltaTime));
             //transform.position += Vector3.left * speed * Time.deltaTime;
             //make facingleft false
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            //transform.rotation = Quaternion.Euler(0, 180, 0);
             facingLeft = true;
         }
 
-        if(Input.GetKey(KeyCode.Space))
+        if(Input.GetKey(KeyCode.Space) && _grounded)
         {
-            climbing = true;
-            GetComponent<Rigidbody>().drag = 0;
+            GetComponent<Rigidbody>().useGravity = false;
+            currentState = playerState.climbing;
         }
 
+        /* Sean commented this out because the code for climbing is now in the Climb() Function
         if(climbing == true)
         {
+
             if (Input.GetKey(KeyCode.D))
             {
                 GetComponent<Rigidbody>().MovePosition(transform.position + (Vector3.right * climbSpeed * Time.deltaTime));
@@ -119,7 +206,9 @@ public class PlayerScript : MonoBehaviour
                 GetComponent<Rigidbody>().MovePosition(transform.position + (Vector3.down * climbSpeed * Time.deltaTime));
                 //transform.position += Vector3.left * speed * Time.deltaTime;
             }
+            
         }
+        */
     }
 
     private void OnTriggerEnter(Collider other)
