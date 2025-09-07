@@ -7,6 +7,7 @@ public class PlayerScript : MonoBehaviour
 {
     Rigidbody rigidBody;
     public float speed = 10;
+    public float climbSpeed = 3;
 
     public float health;
     public float maxHealth;
@@ -16,6 +17,8 @@ public class PlayerScript : MonoBehaviour
 
     public float grapples;
     public float maxGrapples;
+
+    public bool climbing;
 
     public bool facingLeft;
 
@@ -75,6 +78,47 @@ public class PlayerScript : MonoBehaviour
             //make facingleft false
             transform.rotation = Quaternion.Euler(0, 180, 0);
             facingLeft = true;
+        }
+
+        if(Input.GetKey(KeyCode.Space))
+        {
+            climbing = true;
+            GetComponent<Rigidbody>().drag = 0;
+        }
+
+        if(climbing == true)
+        {
+            if (Input.GetKey(KeyCode.D))
+            {
+                GetComponent<Rigidbody>().MovePosition(transform.position + (Vector3.right * climbSpeed * Time.deltaTime));
+                //transform.position += Vector3.right * speed * Time.deltaTime;
+                //make facingLeft true
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+                facingLeft = false;
+            }
+
+            //Check if A key is held
+            if (Input.GetKey(KeyCode.A))
+            {
+                GetComponent<Rigidbody>().MovePosition(transform.position + (Vector3.left * climbSpeed * Time.deltaTime));
+                //transform.position += Vector3.left * speed * Time.deltaTime;
+                //make facingleft false
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+                facingLeft = true;
+            }
+
+            if (Input.GetKey(KeyCode.W))
+            {
+                GetComponent<Rigidbody>().MovePosition(transform.position + (Vector3.up * climbSpeed * Time.deltaTime));
+                //transform.position += Vector3.right * speed * Time.deltaTime;
+            }
+
+            //Check if A key is held
+            if (Input.GetKey(KeyCode.S))
+            {
+                GetComponent<Rigidbody>().MovePosition(transform.position + (Vector3.down * climbSpeed * Time.deltaTime));
+                //transform.position += Vector3.left * speed * Time.deltaTime;
+            }
         }
     }
 
