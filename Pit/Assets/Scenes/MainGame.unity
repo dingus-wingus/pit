@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.3069224, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -552,7 +552,6 @@ GameObject:
   - component: {fileID: 808107643}
   - component: {fileID: 808107642}
   - component: {fileID: 808107641}
-  - component: {fileID: 808107640}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: Untagged
@@ -560,26 +559,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &808107640
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 808107639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1de1edf54cb7ed41aa35ef1a8f82ea9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Cam: {fileID: 808107639}
-  PC: {fileID: 1251441148}
-  Offset: {x: 0, y: 0, z: -10}
-  LerpSpeed: 0.1
-  leftLimit: -69
-  rightLimit: 81.3
-  topLimit: 30
-  bottomLimit: -133
 --- !u!114 &808107641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1271,18 +1250,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5ed77e76e14cc66489557ed8cd2aef9d, type: 3}
---- !u!114 &1251441148 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 644726127188820143, guid: 8363d8214bf766749b7ae29b69b2fdba,
-    type: 3}
-  m_PrefabInstance: {fileID: 1296224741}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e79934c269d077649926cc326f88e576, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1295013482
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1382,12 +1349,17 @@ PrefabInstance:
     - target: {fileID: 644726127188820143, guid: 8363d8214bf766749b7ae29b69b2fdba,
         type: 3}
       propertyPath: staminaDrain
-      value: 50
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 644726127188820143, guid: 8363d8214bf766749b7ae29b69b2fdba,
         type: 3}
       propertyPath: staminaRecover
-      value: 1
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 644726127188820143, guid: 8363d8214bf766749b7ae29b69b2fdba,
+        type: 3}
+      propertyPath: climbRestFactor
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1369626170359903314, guid: 8363d8214bf766749b7ae29b69b2fdba,
         type: 3}
@@ -1448,6 +1420,31 @@ PrefabInstance:
         type: 3}
       propertyPath: Cam
       value: 
+      objectReference: {fileID: 808107639}
+    - target: {fileID: 7001226782442241803, guid: 8363d8214bf766749b7ae29b69b2fdba,
+        type: 3}
+      propertyPath: Offset.z
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7001226782442241803, guid: 8363d8214bf766749b7ae29b69b2fdba,
+        type: 3}
+      propertyPath: topLimit
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 7001226782442241803, guid: 8363d8214bf766749b7ae29b69b2fdba,
+        type: 3}
+      propertyPath: leftLimit
+      value: -80
+      objectReference: {fileID: 0}
+    - target: {fileID: 7001226782442241803, guid: 8363d8214bf766749b7ae29b69b2fdba,
+        type: 3}
+      propertyPath: rightLimit
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 7001226782442241803, guid: 8363d8214bf766749b7ae29b69b2fdba,
+        type: 3}
+      propertyPath: bottomLimit
+      value: -1000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2045,6 +2042,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 808107644}
+  - {fileID: 1296224741}
   - {fileID: 1751825811}
   - {fileID: 3232941399845053215}
   - {fileID: 1868148907}
@@ -2063,6 +2061,5 @@ SceneRoots:
   - {fileID: 2075151765}
   - {fileID: 1387053673}
   - {fileID: 1226570921}
-  - {fileID: 1296224741}
   - {fileID: 549699986}
   - {fileID: 883774487}

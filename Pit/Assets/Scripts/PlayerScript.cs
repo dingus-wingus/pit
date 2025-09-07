@@ -6,17 +6,22 @@ using UnityEngine.Scripting.APIUpdating;
 public class PlayerScript : MonoBehaviour
 {
     Rigidbody rigidBody;
-    public float speed = 10;
+
+    private float hSpeed = 0; //current speed
+    public float accel = 0.2f; //time in seconds it takes to accelerate to/decelerate from top speed
+    public float airAccelFactor = 0.3f; //percentage of acceleration to apply while in the air (1 = 100%)
+
+    public float speed = 10; //top speed
     public float climbSpeed = 3;
 
     //public float health;
     //public float maxHealth;
 
     public float stamina;
+    public float staminaDamage; //the amount of stamina that cannot be recovered due to damage
     public float maxStamina;
     public float staminaDrain; //the rate at which stamina drains in stamina per second
     public float staminaRecover; //the rate at which stamina is recovered in stamina per second
-    public float staminaDamage; //the amount of stamina that cannot be recovered due to damage
     public float climbRestFactor; //the multiplier for stamina drain when the player is not moving while holding space
 
     public float grapples;
@@ -28,10 +33,10 @@ public class PlayerScript : MonoBehaviour
 
     //By Wade; variables for fall damage
     public LayerMask groundLayer;
-    public bool wasGrounded;
-    public bool wasFalling;
-    public float startOfFall;
-    public bool _grounded = false;
+    private bool wasGrounded;
+    private bool wasFalling;
+    private float startOfFall;
+    private bool _grounded = false;
     public float minimumFall;
 
     //Player State Machine
@@ -154,10 +159,29 @@ public class PlayerScript : MonoBehaviour
     }
 
     /// <summary>
+    /// Bring a towards b by amount t
+    /// </summary>
+    private float Approach(float a, float b, float t)
+    {
+        if (a < b)
+        {
+            a += t;
+            if (a > b) a = b;
+        }
+        else if (a > b)
+        {
+            a -= t;
+            if (a < b) a = b;
+        }
+        return a;
+    }
+
+    /// <summary>
     /// Check for input to move the player left or right
     /// </summary>
     private void Move()
     {
+        /*
         //Check if D key is held
         if (Input.GetKey(KeyCode.D))
         {
@@ -177,8 +201,18 @@ public class PlayerScript : MonoBehaviour
             //transform.rotation = Quaternion.Euler(0, 180, 0);
             facingLeft = true;
         }
+        */
 
-        if(Input.GetKey(KeyCode.Space) && _grounded)
+        int move = 0;
+        if (Input.GetKey(KeyCode.D)) move += 1;
+        if (Input.GetKey(KeyCode.A)) move -= 1;
+
+        if (_grounded) hSpeed = Approach(hSpeed, speed * move, speed * (1 / accel) * Time.deltaTime);
+        else hSpeed = Approach(hSpeed, speed * move, speed * (1 / accel) * Time.deltaTime * airAccelFactor);
+
+            GetComponent<Rigidbody>().MovePosition(transform.position + (new Vector3(hSpeed, 0, 0) * Time.deltaTime));
+
+        if (Input.GetKey(KeyCode.Space) && _grounded)
         {
             GetComponent<Rigidbody>().useGravity = false;
             currentState = playerState.climbing;
@@ -280,6 +314,8 @@ public class PlayerScript : MonoBehaviour
         {
             //health = ((health) - (fallDistance * 3));
             staminaDamage += fallDistance * 3;
+            stamina -= staminaDamage * 3;
+            if (stamina < 0) stamina = 0; 
             Debug.Log("Player fell " + fallDistance + " units ");
         }
 

@@ -37,7 +37,7 @@ public class CameraScript : MonoBehaviour
             hOffset = Mathf.Lerp(hOffset, 2, LerpSpeed);
         }*/
 
-        transform.position = new Vector3(Mathf.Clamp(transform.position.x, leftLimit, rightLimit), Mathf.Clamp(transform.position.y, bottomLimit, topLimit), Mathf.Clamp(transform.position.z, -10, -10));
+        Cam.transform.position = new Vector3(Mathf.Clamp(transform.position.x, leftLimit, rightLimit), Mathf.Clamp(transform.position.y, bottomLimit, topLimit), Cam.transform.position.z);
 
         /*if (Input.GetKeyDown(KeyCode.LeftShift))
         {
