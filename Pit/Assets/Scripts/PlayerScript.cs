@@ -5,6 +5,7 @@ using UnityEngine.Scripting.APIUpdating;
 
 public class PlayerScript : MonoBehaviour
 {
+    Rigidbody rigidBody;
     public float speed = 10;
 
     public float health;
@@ -18,21 +19,37 @@ public class PlayerScript : MonoBehaviour
 
     public bool facingLeft;
 
+    //By Wade; variables for fall damage
+    public LayerMask groundLayer;
+    public bool wasGrounded;
+    public bool wasFalling;
+    public float startOfFall;
+    public bool _grounded = false;
+    public float minimumFall;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        rigidBody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void FixedUpdate()
     {
         Move();
+
+        CheckGround();
+
+        if (!wasFalling && isFalling) startOfFall = transform.position.y;
+        if (!wasGrounded && _grounded) TakeDamage();
+
+        wasGrounded = _grounded;
+        wasFalling = isFalling;
     }
 
     /// <summary>
@@ -89,5 +106,34 @@ public class PlayerScript : MonoBehaviour
             speed = 10;
             GetComponent<Rigidbody>().drag = 0;
         }
+    }
+    /// <summary>
+    /// Author: Wade
+    /// Desc: Manages player fall time and corresponding fall damage, if any.
+    /// </summary>
+    public void CheckGround()
+    {
+        Ray ray = new Ray(transform.position, Vector3.down);
+        _grounded = Physics.Raycast(ray, 1.1f, groundLayer);
+    }
+
+    bool isFalling { get { return (!_grounded && rigidBody.velocity.y < 0); } }
+
+    /// <summary>
+    /// Author: Wade
+    /// Desc: Manages when player takes damage
+    /// </summary>
+    /// 
+    private void TakeDamage()
+    {
+        float fallDistance = startOfFall - transform.position.y;
+
+        if (fallDistance > minimumFall)
+        {
+            health = ((health) - (fallDistance * 3));
+            Debug.Log("Player fell " + fallDistance + " units ");
+        }
+
+
     }
 }

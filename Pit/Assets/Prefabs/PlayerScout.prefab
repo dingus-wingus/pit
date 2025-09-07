@@ -148,13 +148,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  health: 0
+  health: 100
   maxHealth: 100
   stamina: 0
   maxStamina: 0
   grapples: 0
   maxGrapples: 3
   facingLeft: 0
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  wasGrounded: 0
+  wasFalling: 0
+  startOfFall: 0
+  _grounded: 0
+  minimumFall: 0.5
 --- !u!114 &7001226782442241803
 MonoBehaviour:
   m_ObjectHideFlags: 0
