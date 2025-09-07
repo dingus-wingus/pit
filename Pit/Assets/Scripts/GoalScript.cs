@@ -9,7 +9,7 @@ public class GoalScript : MonoBehaviour
     {
         if (other.GetComponent<PlayerScript>())
         {
-            SceneManager.LoadScene("Winning");
+            SceneManager.LoadScene(2);
         }
     }
 }
