@@ -24,8 +24,17 @@ public class PlayerScript : MonoBehaviour
     public float staminaRecover; //the rate at which stamina is recovered in stamina per second
     public float climbRestFactor; //the multiplier for stamina drain when the player is not moving while holding space
 
+    public GameObject grapple;
+    private bool grapplePressed = false;
     public float grapples;
     public float maxGrapples;
+
+    public Vector3 grappleStartPos;
+    public Vector3 grappleEndPos;
+    public Vector3 grappleDirection;
+    private float grappleDistance;
+    private float grappleDistanceTravelled;
+    public LineRenderer grappleRenderer;
 
     public bool climbing;
 
@@ -39,10 +48,12 @@ public class PlayerScript : MonoBehaviour
     private bool _grounded = false;
     public float minimumFall;
 
+
     //Player State Machine
     private enum playerState { //this is an enumerator, a type of variable that can be any value from a defined set. All of our different states are defined here
         normal, //moving, falling, etc
         climbing, //climbing
+        grappling, //moving on the grapple
     }
     private playerState currentState = playerState.normal;
 
@@ -56,7 +67,10 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetMouseButtonDown(0))
+        {
+            grapplePressed = true;
+        }
     }
 
     private void FixedUpdate()
@@ -65,6 +79,7 @@ public class PlayerScript : MonoBehaviour
         {
             case playerState.normal:
                 Move();
+                Grapple();
 
                 CheckGround();
 
@@ -87,8 +102,72 @@ public class PlayerScript : MonoBehaviour
                 Climb();
 
                 break;
+
+            case playerState.grappling:
+                GrappleMove();
+
+                if (Input.GetKey(KeyCode.Space))
+                {
+                    currentState = playerState.climbing;
+                }
+
+                break;
         }
         
+    }
+
+    private void GrappleMove()
+    {
+        int move = 0;
+        //Check if W key is held
+        if (Input.GetKey(KeyCode.W)) move += 1;
+
+        //Check if S key is held
+        if (Input.GetKey(KeyCode.S)) move -= 1;
+
+        GetComponent<Rigidbody>().MovePosition(transform.position + (grappleDirection * move * climbSpeed * 2 * Time.deltaTime));
+
+        grappleDistanceTravelled += (move * climbSpeed * 2 * Time.deltaTime);
+        if (grappleDistanceTravelled < 0 || grappleDistanceTravelled > grappleDistance)
+        {
+            currentState = playerState.climbing;
+        }
+    }
+
+    public void StartGrappling()
+    {
+        Debug.Log("Starting Grapple");
+        GetComponent<Rigidbody>().useGravity = false;
+        currentState = playerState.grappling;
+
+        grappleDirection = (grappleEndPos - grappleStartPos).normalized;
+        grappleDistance = Vector3.Distance(grappleStartPos, grappleEndPos);
+        grappleDistanceTravelled = 0;
+    }
+
+    public void SetGrapple()
+    {
+        Vector3[] positions = new Vector3[] {grappleStartPos, grappleEndPos};
+        grappleRenderer.SetPositions(positions);
+    }
+
+    private void Grapple()
+    {
+        if (grapplePressed && _grounded)
+        {
+            grapplePressed = false;
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = 1;
+            mousePos = GetComponent<CameraScript>().Cam.GetComponent<Camera>().ScreenToWorldPoint(mousePos);
+            mousePos.z = 0;
+
+            GameObject newGrapple = Instantiate(grapple, transform.position, transform.rotation);
+
+            newGrapple.GetComponent<GrappleProjectileScript>().directionVector = (mousePos - transform.position).normalized;
+            newGrapple.GetComponent<GrappleProjectileScript>().player = this;
+            newGrapple.GetComponent<GrappleProjectileScript>().groundLayer = groundLayer;
+            
+        }
     }
 
     private void Climb()
