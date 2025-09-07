@@ -279,7 +279,7 @@ public class PlayerScript : MonoBehaviour
         if (fallDistance > minimumFall)
         {
             //health = ((health) - (fallDistance * 3));
-            staminaDamage += fallDistance * 3;
+            staminaDamage += fallDistance * 2;
             Debug.Log("Player fell " + fallDistance + " units ");
         }
 
