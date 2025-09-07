@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
+using TMPro;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -63,6 +64,8 @@ public class PlayerScript : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Animator anim;
 
+    public TextMeshProUGUI staminaDisplay;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -91,6 +94,8 @@ public class PlayerScript : MonoBehaviour
 
     private void FixedUpdate()
     {
+        staminaDamage = Mathf.Round(staminaDamage);
+        staminaDisplay.text = "Stamina: " + Mathf.Round(stamina);
         switch (currentState) //this is a switch statement, we can define cases for it to check that if true, will execute all code beneath it to the END of the entire switch state
         {
             case playerState.normal:
@@ -323,7 +328,6 @@ public class PlayerScript : MonoBehaviour
         }
 
         
-
         if (_grounded)
         {
             hSpeed = Approach(hSpeed, speed * move, speed * (1 / accel) * Time.deltaTime); 
