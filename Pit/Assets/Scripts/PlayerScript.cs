@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
 
 public class PlayerScript : MonoBehaviour
@@ -70,6 +71,11 @@ public class PlayerScript : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             grapplePressed = true;
+        }
+
+        if (staminaDamage >= 100)
+        {
+            StartCoroutine(GameEnd());
         }
     }
 
@@ -405,5 +411,11 @@ public class PlayerScript : MonoBehaviour
         }
 
 
+    }
+
+    IEnumerator GameEnd()
+    {
+        yield return new WaitForSeconds(2);
+        SceneManager.LoadScene(3);
     }
 }
