@@ -7,7 +7,7 @@ public class OutScreenScript : MonoBehaviour
 {
     public void Redo()
     {
-        SceneManager.LoadScene("MainGame");
+        SceneManager.LoadScene(1);
     }
 
     public void Quit()
